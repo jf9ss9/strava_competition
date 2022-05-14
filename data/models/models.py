@@ -49,6 +49,6 @@ class Tokens(Base):
     refresh_token = Column(String(100))
     expires_in = Column(Integer)
     expires_at = Column(Integer)
-    updated_at = Column(Integer, onupdate=datetime.now())
+    updated_at = Column(Integer, onupdate=datetime.now(), default=datetime.now())
 
     users = relationship("Users", back_populates="tokens")
