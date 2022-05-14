@@ -1,6 +1,7 @@
 import time
 import json
 import requests
+from .users import insert_user
 from data.access.database import session
 from data.models.models import Users, Tokens
 
@@ -81,7 +82,6 @@ def exchange_code_for_token(code: str) -> None:
     )
 
     if result.status_code == 200:
-        # TODO: add token record to db
         print(json.dumps(result.json(), indent=4))
         insert_token(result.json())
     else:
@@ -94,6 +94,8 @@ def insert_token(result_json: dict) -> None:
     :param result_json: the request's result as json
     """
     athlete_info = result_json["athlete"]
+    # TODO: insert group too
+    insert_user(user_id=athlete_info["id"])
     user_id = (
         session.query(Users.id).filter(Users.user_id == athlete_info["id"]).first()[0]
     )
