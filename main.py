@@ -1,15 +1,13 @@
-import json
 import dash
 import dash_html_components as html
 import dash_core_components as dcc
 import plotly.express as px
-import requests
-import random
-from datetime import timedelta, datetime
 from data.access.helpers.get_data import (
     get_distance_for_groups_daily,
     get_distance_sum_by_groups,
 )
+from core.core import refresh_stats
+
 
 app = dash.Dash(__name__)
 
@@ -45,26 +43,6 @@ app.layout = html.Div(
 )
 
 
-def get_activities():
-    token = "e6cc95c23bdcfe1fe371cbd2f582e47ea0a6c064"
-    headers = {"Authorization": f"Bearer {token}"}
-    result = requests.get(
-        url="https://www.strava.com/api/v3/athlete/activities", headers=headers
-    )
-    if result.status_code == 200:
-        print(json.dumps(result.json(), indent=4))
-
-
-def random_date(start, end):
-    """
-    This function will return a random datetime between two datetime
-    objects.
-    """
-    delta = end - start
-    int_delta = (delta.days * 24 * 60 * 60) + delta.seconds
-    random_second = random.randrange(int_delta)
-    return start + timedelta(seconds=random_second)
-
-
 if __name__ == "__main__":
-    app.run_server()
+    # app.run_server()
+    refresh_stats()

@@ -1,3 +1,4 @@
+import datetime
 import time
 import json
 import requests
@@ -8,7 +9,7 @@ from data.models.models import Users, Tokens
 CLIENT_SECRET = "f84c85e32c0a329a2995dd5e2beed8296218df6a"
 
 
-def check_tokens_valid() -> None:
+def refresh_tokens() -> None:
     """
     Refresh tokens for each expired token.
     """
@@ -20,10 +21,12 @@ def check_tokens_valid() -> None:
         client_id = (
             session.query(Users.user_id).filter(Users.id == token.user_id).first()[0]
         )
-        refresh_tokens(client_id, client_secret=CLIENT_SECRET)
+        refresh_tokens_for_client(client_id, client_secret=CLIENT_SECRET)
 
 
-def refresh_tokens(client_id: int, client_secret: str) -> None:
+def refresh_tokens_for_client(
+    client_id: int, client_secret: str = CLIENT_SECRET
+) -> None:
     """
     Refreshes the tokens for the requested client.
     :param client_id: The id of the client to update the tokens
@@ -107,3 +110,24 @@ def insert_token(result_json: dict) -> None:
     )
     session.add(token)
     session.commit()
+
+
+def get_latest_update() -> datetime.datetime:
+    last_date = (
+        session.query(Tokens)
+        .filter(Tokens.updated_at.is_not(None))
+        .order_by(Tokens.updated_at.desc())
+        .first()
+        .updated_at
+    )
+    return last_date
+
+
+def get_tokens() -> list[Tokens]:
+    tokens = session.query(Tokens).all()
+    return tokens
+
+
+def get_user_from_token(token: Tokens) -> Users:
+    user = session.query(Users).filter(Users.id == token.user_id).first()
+    return user
