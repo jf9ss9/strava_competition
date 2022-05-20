@@ -74,7 +74,6 @@ def exchange_code_for_token(code: str) -> None:
         "client_id": 84444,
         "client_secret": CLIENT_SECRET,
         "code": code,
-        # "code": "209deaa2451948a388063251b9642d0488a3a81d",
         "grant_type": "authorization_code",
     }
     result = requests.post(
@@ -95,7 +94,7 @@ def insert_token(result_json: dict) -> None:
     """
     athlete_info = result_json["athlete"]
     # TODO: insert group too
-    insert_user(user_id=athlete_info["id"])
+    insert_user(user_id=athlete_info["id"], name="Edy")
     user_id = (
         session.query(Users.id).filter(Users.user_id == athlete_info["id"]).first()[0]
     )
