@@ -1,5 +1,6 @@
-from data.models.models import Users
+from data.models.models import Users, Workouts
 from data.access.database import session
+from sqlalchemy import func, desc
 
 
 def insert_user(user_id: int, name: str, group_id: int = 1) -> None:
@@ -15,3 +16,14 @@ def insert_user(user_id: int, name: str, group_id: int = 1) -> None:
 
     session.add(user)
     session.commit()
+
+
+def get_top_n_user(top_n: int) -> list[Users]:
+    users = (
+        session.query(Users.user_id, func.sum(Workouts.distance).label("distance"))
+        .join(Workouts, Users.id == Workouts.user_id)
+        .group_by(Users.user_id)
+        .order_by(desc("distance"))
+        .all()
+    )
+    return users[:top_n]

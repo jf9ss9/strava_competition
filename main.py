@@ -7,6 +7,7 @@ from data.access.helpers.get_data import (
     get_distance_sum_by_groups,
 )
 from core.core import refresh_stats
+from data.access.helpers.users import get_top_n_user
 
 
 app = dash.Dash(__name__)
@@ -45,4 +46,5 @@ app.layout = html.Div(
 
 if __name__ == "__main__":
     # app.run_server()
-    refresh_stats()
+    # refresh_stats()
+    print(get_top_n_user(5))

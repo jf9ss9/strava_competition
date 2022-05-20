@@ -19,7 +19,7 @@ def refresh_tokens() -> None:
 
     for token in expired_tokens:
         client_id = (
-            session.query(Users.user_id).filter(Users.id == token.user_id).first()[0]
+            session.query(Users).filter(Users.id == token.user_id).first().user_id
         )
         refresh_tokens_for_client(client_id, client_secret=CLIENT_SECRET)
 
