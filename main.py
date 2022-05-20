@@ -5,9 +5,10 @@ import plotly.express as px
 from data.access.helpers.get_data import (
     get_distance_for_groups_daily,
     get_distance_sum_by_groups,
+    get_top_n_users_df,
 )
 from core.core import refresh_stats
-from data.access.helpers.users import get_top_n_user
+
 
 
 app = dash.Dash(__name__)
@@ -22,6 +23,12 @@ def line_plot():
 def bar_plot():
     df = get_distance_sum_by_groups()
     fig = px.bar(df, x="group_name", y="summa")
+    return fig
+
+
+def bar_plot2():
+    df = get_top_n_users_df()
+    fig = px.bar(df, x="user_id", y="distance")
     return fig
 
 
@@ -40,11 +47,15 @@ app.layout = html.Div(
             style={"textAlign": "center", "marginTop": 40, "marginBottom": 40},
         ),
         dcc.Graph(id="bar_plot", figure=bar_plot()),
+        html.H1(
+            id="H12",
+            children="Team contest bar plot2",
+            style={"textAlign": "center", "marginTop": 40, "marginBottom": 40},
+        ),
+        dcc.Graph(id="bar_plot2", figure=bar_plot2()),
     ],
 )
 
 
 if __name__ == "__main__":
-    # app.run_server()
-    # refresh_stats()
-    print(get_top_n_user(5))
+    app.run_server()
