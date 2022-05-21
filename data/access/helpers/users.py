@@ -19,6 +19,11 @@ def insert_user(user_id: int, name: str, group_id: int = 1) -> None:
 
 
 def get_top_n_user(top_n: int) -> list[Users]:
+    """
+    Returns the top n users by total distance.
+    :param top_n: num of top users as integer
+    :return: list containing at most the top n Users objects
+    """
     users = (
         session.query(Users.user_id, func.sum(Workouts.distance).label("distance"))
         .join(Workouts, Users.id == Workouts.user_id)

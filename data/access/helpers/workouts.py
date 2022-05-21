@@ -2,7 +2,11 @@ from data.models.models import Workouts
 from data.access.database import session
 
 
-def insert_workouts(workouts_json) -> None:
+def insert_workouts(workouts_json: dict) -> None:
+    """
+    Inserts each workout into the database from the response json.
+    :param workouts_json: json returned by the strava list activities API endpoint
+    """
     for workout in workouts_json:
         insert_workout(
             user_id=workout["athlete"]["id"],
@@ -22,6 +26,15 @@ def insert_workout(
     elapsed_time: int,
     workout_date: str,
 ) -> None:
+    """
+    Inserts a single Workout object in the database.
+    :param user_id: the user's id from the user table as integer
+    :param workout_type: the workout's type (e.g: Run, Cycling, etc.)
+    :param distance: the distance of the workout as float
+    :param workout_name: the workout's name (e.g: Morning run)
+    :param elapsed_time: elapsed time as integer
+    :param workout_date: workout's start date as string
+    """
     workout = Workouts(
         user_id=user_id,
         workout_type=workout_type,

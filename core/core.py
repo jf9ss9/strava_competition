@@ -1,18 +1,19 @@
 import datetime
-
 import requests
 import time
-from datetime import timedelta
-import random
 from data.access.helpers.tokens import (
     refresh_expired_tokens,
-    get_latest_update,
+    get_latest_token_update,
     get_tokens,
 )
 from data.access.helpers.workouts import insert_workouts
 
 
 def get_activities(after: int) -> None:
+    """
+    Gets the activities from the API endpoint for each user and saves it in the database.
+    :param after: list the activities after a unix timestamp, integer
+    """
     for token in get_tokens():
         headers = {"Authorization": f"Bearer {token.access_token}"}
         params = {"after": after}
@@ -25,21 +26,15 @@ def get_activities(after: int) -> None:
             insert_workouts(result.json())
         else:
             print("BAD REQUEST")
-
-
-def random_date(start, end):
-    """
-    This function will return a random datetime between two datetime
-    objects.
-    """
-    delta = end - start
-    int_delta = (delta.days * 24 * 60 * 60) + delta.seconds
-    random_second = random.randrange(int_delta)
-    return start + timedelta(seconds=random_second)
+            print(result.json())
 
 
 def get_new_workouts() -> None:
-    last_date = get_latest_update()
+    """
+    Gets the latest token update and if it's not the current date,
+    then calls the get_activities after the last token update date.
+    """
+    last_date = get_latest_token_update()
     if datetime.datetime.now().strftime("%Y-%m-%d") == last_date.strftime("%Y-%m-%d"):
         return
     last_date_unix = int(time.mktime(last_date.timetuple()))
@@ -48,8 +43,8 @@ def get_new_workouts() -> None:
 
 def refresh_stats() -> None:
     """
-    Main
-    :return:
+    Main function which is scheduled. First refreshes the expired tokens,
+    then gets the new workouts.
     """
     refresh_expired_tokens()
     get_new_workouts()

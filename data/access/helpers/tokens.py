@@ -24,10 +24,9 @@ def refresh_expired_tokens() -> None:
 
 def refresh_tokens(token: Tokens) -> None:
     """
-    Refreshes the tokens for the requested user.
+    Refreshes the tokens for the requested token.
     :param token: token belonging to user with user_id
     """
-    user_id = session.query(Users).filter(Users.id == token.user_id).first().id
     params = {
         "client_id": CLIENT_ID,
         "client_secret": CLIENT_SECRET,
@@ -38,6 +37,7 @@ def refresh_tokens(token: Tokens) -> None:
         url="https://www.strava.com/api/v3/oauth/token", params=params
     )
     if result.status_code == 200:
+        user_id = get_user_from_token(token).id
         update_tokens(user_id, result.json())
     else:
         print("ERROR: BAD REQUEST")
@@ -106,7 +106,11 @@ def insert_token(result_json: dict) -> None:
     session.commit()
 
 
-def get_latest_update() -> datetime.datetime:
+def get_latest_token_update() -> datetime.datetime:
+    """
+    Returns the latest date when the tokens were updated.
+    :return: latest date as datetime object
+    """
     last_date = (
         session.query(Tokens)
         .filter(Tokens.updated_at.is_not(None))
@@ -118,10 +122,19 @@ def get_latest_update() -> datetime.datetime:
 
 
 def get_tokens() -> list[Tokens]:
+    """
+    Returns each token from the database.
+    :return: list of tokens
+    """
     tokens = session.query(Tokens).all()
     return tokens
 
 
 def get_user_from_token(token: Tokens) -> Users:
+    """
+    Get the user associated with the given token.
+    :param token: token object
+    :return: user object associated with the given token
+    """
     user = session.query(Users).filter(Users.id == token.user_id).first()
     return user

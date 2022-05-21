@@ -33,6 +33,11 @@ def get_distance_for_groups_daily() -> pd.DataFrame:
 
 
 def get_top_n_users_df(top_n: int = 5) -> pd.DataFrame:
+    """
+    Returns the top n users by distance in a dataframe.
+    :param top_n: num of top users as integer, by default 5
+    :return: dataframe containing the top n users
+    """
     df = pd.DataFrame(get_top_n_user(top_n), columns=["user_id", "distance"])
     df["user_id"] = df["user_id"].astype(str)
     return df
