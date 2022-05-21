@@ -43,4 +43,4 @@ class Tokens(Base):
     refresh_token = Column(String(100))
     expires_in = Column(Integer)
     expires_at = Column(Integer)
-    updated_at = Column(Integer, onupdate=datetime.now(), default=datetime.now())
+    updated_at = Column(DateTime, onupdate=datetime.now(), default=datetime.now())

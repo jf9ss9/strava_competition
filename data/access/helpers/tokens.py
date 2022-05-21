@@ -7,37 +7,30 @@ from data.access.database import session
 from data.models.models import Users, Tokens
 
 CLIENT_SECRET = "f84c85e32c0a329a2995dd5e2beed8296218df6a"
+CLIENT_ID = 84444
 
 
-def refresh_tokens() -> None:
+def refresh_expired_tokens() -> None:
     """
     Refresh tokens for each expired token.
     """
     expired_tokens = (
-        session.query(Tokens).filter(Tokens.expires_at <= int(time.time())).all()
+        session.query(Tokens).filter(Tokens.expires_at >= int(time.time())).all()
     )
 
     for token in expired_tokens:
-        client_id = (
-            session.query(Users).filter(Users.id == token.user_id).first().user_id
-        )
-        refresh_tokens_for_client(client_id, client_secret=CLIENT_SECRET)
+        refresh_tokens(token)
 
 
-def refresh_tokens_for_client(
-    client_id: int, client_secret: str = CLIENT_SECRET
-) -> None:
+def refresh_tokens(token: Tokens) -> None:
     """
-    Refreshes the tokens for the requested client.
-    :param client_id: The id of the client to update the tokens
-    :param client_secret: Client secret code.
+    Refreshes the tokens for the requested user.
+    :param token: token belonging to user with user_id
     """
-    user_id = session.query(Users.id).filter(Users.user_id == client_id).first()[0]
-    token = session.query(Tokens).filter(Tokens.user_id == user_id).first()
-
+    user_id = session.query(Users).filter(Users.id == token.user_id).first().id
     params = {
-        "client_id": client_id,
-        "client_secret": client_secret,
+        "client_id": CLIENT_ID,
+        "client_secret": CLIENT_SECRET,
         "grant_type": "refresh_token",
         "refresh_token": token.refresh_token,
     }
@@ -48,6 +41,7 @@ def refresh_tokens_for_client(
         update_tokens(user_id, result.json())
     else:
         print("ERROR: BAD REQUEST")
+        print(result.json())
 
 
 def update_tokens(user_id: int, result_json: dict) -> None:

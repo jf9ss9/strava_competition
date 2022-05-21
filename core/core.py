@@ -5,7 +5,7 @@ import time
 from datetime import timedelta
 import random
 from data.access.helpers.tokens import (
-    refresh_tokens,
+    refresh_expired_tokens,
     get_latest_update,
     get_tokens,
 )
@@ -51,5 +51,5 @@ def refresh_stats() -> None:
     Main
     :return:
     """
-    refresh_tokens()
+    refresh_expired_tokens()
     get_new_workouts()

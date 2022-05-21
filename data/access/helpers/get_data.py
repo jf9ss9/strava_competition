@@ -34,5 +34,5 @@ def get_distance_for_groups_daily() -> pd.DataFrame:
 
 def get_top_n_users_df(top_n: int = 5) -> pd.DataFrame:
     df = pd.DataFrame(get_top_n_user(top_n), columns=["user_id", "distance"])
-    df["user_id"] = df["user_id"].astype(str, inplace=True)
+    df["user_id"] = df["user_id"].astype(str)
     return df

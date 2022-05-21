@@ -10,7 +10,6 @@ from data.access.helpers.get_data import (
 from core.core import refresh_stats
 
 
-
 app = dash.Dash(__name__)
 
 
@@ -58,4 +57,5 @@ app.layout = html.Div(
 
 
 if __name__ == "__main__":
-    app.run_server()
+    # app.run_server()
+    refresh_stats()
